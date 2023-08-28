@@ -7,7 +7,14 @@ SHA=$(shell git rev-parse --short HEAD)
 UNCLEAN_TREE_SUFFIX=-$(shell test -z "$(git status --porcelain --untracked-files=no)" || \
 	GIT_INDEX_FILE=`mktemp` git add -u && git write-tree && git reset -q && rm $$GIT_INDEX_FILE)
 
+define RUN_COMMANDS
+	cd k8s && CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py 
+	kubectl apply -f $(K8S_MANIFESTS_DIR)
+endef
+
 .PHONY: default verify build image run $(ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
+
+.DEFAULT_GOAL = default
 
 default: build image run
 
@@ -18,8 +25,7 @@ build: $(ARTIFACTS)
 image: $(IMAGE_TARGETS)
 
 run:
-	cd k8s && CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py
-	kubectl apply -f $(K8S_MANIFESTS_DIR)
+	$(call RUN_COMMANDS)
 
 $(IMAGE_TARGETS):
 	PROJECT_NAME=$(subst images/Dockerfile.,,$@) && \
