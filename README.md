@@ -20,6 +20,19 @@ You can reference `$(BUILD_DIR)` and `$(K8S_MANIFEST_DIR)` in your build targets
 The default build target is `build image run` which builds your artifacts, creates Docker images for them, and deploys
 them to your Kubernetes cluster.  You can also run `make verify` to run `lint test cover`.
 
+If you want to change the behaviour of the `run` target, redefine the `RUN_COMMANDS` variable after including the base
+Makefile, as follows:
+
+```
+include build/base.mk
+
+define RUN_COMMANDS
+    command1
+    command2
+    ...
+endef
+```
+
 ## Example project makefile:
 
 ```
