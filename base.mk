@@ -35,7 +35,7 @@ $(IMAGE_TARGETS):
 		docker push $$IMAGE_NAME && \
 		echo -n $$IMAGE_NAME > $(BUILD_DIR)/$${PROJECT_NAME}-image
 
-setup:
+setup::
 	pre-commit install
 	cd k8s && poetry install
 
