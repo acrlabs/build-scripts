@@ -4,8 +4,9 @@ DOCKER_REGISTRY ?= localhost:5000
 
 IMAGE_TARGETS=$(addprefix images/Dockerfile.,$(ARTIFACTS))
 SHA=$(shell git rev-parse --short HEAD)
-UNCLEAN_TREE_SUFFIX=-$(shell test -z "$(git status --porcelain --untracked-files=no)" || \
-	GIT_INDEX_FILE=`mktemp` git add -u && git write-tree && git reset -q && rm $$GIT_INDEX_FILE)
+
+makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+UNCLEAN_TREE_SUFFIX=$(shell $(makeFileDir)/get_unclean_sha.sh)
 
 define RUN_COMMANDS
 	cd k8s && CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py 
