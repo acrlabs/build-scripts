@@ -39,5 +39,5 @@ setup::
 	pre-commit install
 	cd k8s && poetry install
 
-clean:
+clean::
 	rm -rf $(BUILD_DIR)
