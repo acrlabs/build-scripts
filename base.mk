@@ -10,6 +10,7 @@ UNCLEAN_TREE_SUFFIX=$(shell $(makeFileDir)/get_unclean_sha.sh)
 
 define RUN_COMMANDS
 	cd k8s && CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py 
+	cp k8s/raw/*.yml $(K8S_MANIFESTS_DIR)/.
 	kubectl apply -f $(K8S_MANIFESTS_DIR)
 endef
 
