@@ -7,7 +7,7 @@ SHA=$(shell git rev-parse --short HEAD)
 makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 UNCLEAN_TREE_SUFFIX=$(shell $(makeFileDir)/get_unclean_sha.sh)
 
-.PHONY: default verify build image run $(ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
+.PHONY: default verify build image run $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
 
 .DEFAULT_GOAL = default
 
@@ -15,7 +15,12 @@ default: build image run
 
 verify: lint test cover
 
-build: $(ARTIFACTS)
+$(BUILD_DIR):
+	mkdir -p $@
+
+$(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS):: | $(BUILD_DIR)
+
+build: $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS)
 
 image: $(IMAGE_TARGETS)
 
