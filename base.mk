@@ -7,7 +7,7 @@ SHA=$(shell git rev-parse --short HEAD)
 makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 UNCLEAN_TREE_SUFFIX=$(shell $(makeFileDir)/get_unclean_sha.sh)
 
-.PHONY: default verify build image run $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
+.PHONY: default verify pre-build pre-image build image run $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
 
 .DEFAULT_GOAL = default
 
@@ -20,9 +20,9 @@ $(BUILD_DIR):
 
 $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS):: | $(BUILD_DIR)
 
-build: $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS)
+build: pre-build $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS)
 
-image: $(IMAGE_TARGETS)
+image: pre-image $(IMAGE_TARGETS)
 
 $(IMAGE_TARGETS):
 	PROJECT_NAME=$(subst images/Dockerfile.,,$@) && \
