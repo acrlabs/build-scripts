@@ -5,7 +5,7 @@ IMAGE_TARGETS=$(addprefix images/Dockerfile.,$(ARTIFACTS))
 SHA=$(shell git rev-parse --short HEAD)
 
 makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-UNCLEAN_TREE_SUFFIX=$(shell $(makeFileDir)/get_unclean_sha.sh)
+UNCLEAN_TREE_SUFFIX=$(shell $(makeFileDir)/get_unclean_tag.sh)
 
 .PHONY: default verify pre-build pre-image build image run $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
 
