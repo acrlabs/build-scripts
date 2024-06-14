@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+SUFFIX=""
 SHA=$(git rev-parse --short HEAD)
 TAGS=$(git tag --points-at ${SHA})
 
