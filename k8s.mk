@@ -1,10 +1,17 @@
 K8S_MANIFESTS_DIR ?= $(BUILD_DIR)/manifests
+KUSTOMIZE_DIR ?= kustomize
 
-.PHONY: k8s
+.PHONY: pre-k8s k8s kustomize
 
-k8s:
+pre-k8s::
 	cd k8s && poetry install
-	cd k8s && JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1 CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py $(FC_ARGS)
+
+k8s: pre-k8s
+	cd k8s && JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1 CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py
+
+kustomize: pre-k8s
+	cd k8s && rm -f $(KUSTOMIZE_DIR)/* && mkdir -p $(KUSTOMIZE_DIR) && cp raw/* $(KUSTOMIZE_DIR)/.|| true
+	cd k8s && JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1 CDK8S_OUTDIR=$(KUSTOMIZE_DIR) BUILD_DIR=$(KUSTOMIZE_DIR) APP_VERSION=$(APP_VERSION) poetry run ./main.py --kustomize
 
 run: k8s
 	cp -r k8s/raw $(K8S_MANIFESTS_DIR) || true
