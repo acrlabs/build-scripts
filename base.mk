@@ -5,7 +5,7 @@ makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 IMAGE_TARGETS=$(addprefix images/Dockerfile.,$(ARTIFACTS))
 IMAGE_TAG=$(shell $(makeFileDir)/docker_tag.sh)
 
-.PHONY: default verify pre-build pre-image build image run $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS) $(IMAGE_TARGETS) lint test cover clean
+.PHONY: default verify pre-build pre-image build image run main extra $(IMAGE_TARGETS) lint test cover clean
 
 .DEFAULT_GOAL = default
 
@@ -16,9 +16,9 @@ verify: lint test cover
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS):: | $(BUILD_DIR)
-
-build: pre-build $(ARTIFACTS) $(EXTRA_BUILD_ARTIFACTS)
+# "order-only" dependency (the `|`) ensures that the build dir exists before running the build step
+build: | $(BUILD_DIR)
+	make pre-build main extra
 
 image: pre-image $(IMAGE_TARGETS)
 
