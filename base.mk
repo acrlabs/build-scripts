@@ -27,7 +27,7 @@ $(IMAGE_TARGETS):
 		IMAGE_NAME=$(DOCKER_REGISTRY)/$$PROJECT_NAME:$(IMAGE_TAG) && \
 		docker build $(BUILD_DIR) -f $@ -t $$IMAGE_NAME && \
 		docker push $$IMAGE_NAME && \
-		echo -n $$IMAGE_NAME > $(BUILD_DIR)/$${PROJECT_NAME}-image
+		printf "$$IMAGE_NAME" > $(BUILD_DIR)/$${PROJECT_NAME}-image
 
 setup::
 	pre-commit install
