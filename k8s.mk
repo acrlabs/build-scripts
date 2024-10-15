@@ -4,10 +4,10 @@ KUSTOMIZE_DIR ?= kustomize
 .PHONY: pre-k8s k8s kustomize
 
 pre-k8s::
-	cd k8s && poetry install
+	[[ -f "k8s/pyproject.toml" ]] && cd k8s && poetry install
 
 k8s: pre-k8s
-	cd k8s && JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1 CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py
+	[[ -f "k8s/pyproject.tom" ]] && cd k8s && JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1 CDK8S_OUTDIR=$(K8S_MANIFESTS_DIR) BUILD_DIR=$(BUILD_DIR) poetry run ./main.py
 
 kustomize: pre-k8s
 	cd k8s && rm -rf $(KUSTOMIZE_DIR)/* && mkdir -p $(KUSTOMIZE_DIR) && cp raw/* $(KUSTOMIZE_DIR)/.|| true
