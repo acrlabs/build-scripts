@@ -4,6 +4,7 @@ KUSTOMIZE_DIR ?= kustomize
 .PHONY: pre-k8s k8s kustomize
 
 pre-k8s::
+	mkdir $(K8S_MANIFESTS_DIR)
 	if [[ -f "k8s/pyproject.toml" ]]; then cd k8s && poetry install; fi
 
 k8s: pre-k8s
