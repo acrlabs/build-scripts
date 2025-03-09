@@ -1,36 +1,62 @@
-BUILD_DIR ?= $(shell pwd)/.build
-DOCKER_REGISTRY ?= localhost:5000
+# public variables that can be changed by projects
+BUILD_DIR ?= .build
+COVERAGE_DIR ?= $(BUILD_DIR)/coverage
 
-makeFileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-IMAGE_TARGETS=$(addprefix images/Dockerfile.,$(ARTIFACTS))
-IMAGE_TAG=$(shell $(makeFileDir)/docker_tag.sh)
-
-.PHONY: default verify pre-build pre-image build image run main extra $(IMAGE_TARGETS) lint test cover clean
-
+# _DEFAULT_BUILD_TARGETS can be modified by sub-makefiles to add additional "default" behaviour
+# when you run `make`
+_DEFAULT_BUILD_TARGETS = build
 .DEFAULT_GOAL = default
+.PHONY: default
+default:
+	make $(_DEFAULT_BUILD_TARGETS)
 
-default: build image run
-
+.PHONY: verify
 verify: lint test cover
 
-$(BUILD_DIR):
+$(BUILD_DIR) $(COVERAGE_DIR):
 	mkdir -p $@
 
-# "order-only" dependency (the `|`) ensures that the build dir exists before running the build step
-build: | $(BUILD_DIR)
-	make pre-build main extra
-
-image: pre-image $(IMAGE_TARGETS)
-
-$(IMAGE_TARGETS):
-	PROJECT_NAME=$(subst images/Dockerfile.,,$@) && \
-		IMAGE_NAME=$(DOCKER_REGISTRY)/$$PROJECT_NAME:$(IMAGE_TAG) && \
-		docker build $(BUILD_DIR) -f $@ -t $$IMAGE_NAME && \
-		docker push $$IMAGE_NAME && \
-		printf "$$IMAGE_NAME" > $(BUILD_DIR)/$${PROJECT_NAME}-image
-
-setup::
+# We define a buch of internal make targets prefixed with '_'; these all use the double-colon
+# syntax to allow us to add new commands to them in other *internal* makefiles.  They're not
+# intended to be modified or overwritten in project-specific makefiles.  Each of these
+# are pre-requisites for the "public" targets, which have the same name without the underscore
+.PHONY: _setup
+_setup::
 	pre-commit install
 
-clean::
+.PHONY: _lint
+_lint::
+	pre-commit run --all
+
+.PHONY: _test
+_test:: | $(COVERAGE_DIR)
+	rm -rf $(COVERAGE_DIR)/*
+
+.PHONY: _cover
+_cover::
+
+.PHONY: _build
+_build:: | $(BUILD_DIR)
+
+.PHONY: _clean
+_clean::
 	rm -rf $(BUILD_DIR)
+
+# Public targets defined below
+.PHONY: setup
+setup: _setup
+
+.PHONY: lint
+lint: _lint
+
+.PHONY: test
+test: _test
+
+.PHONY: cover
+cover: _cover
+
+.PHONY: build
+build: _build
+
+.PHONY: clean
+clean: _clean
