@@ -2,8 +2,9 @@ CARGO ?= cargo
 COVERAGE_IGNORES=
 
 ifdef IN_CI
-RUST_COVER_TYPE = --codecov
+RUST_COVER_TYPE = --codecov --output-path codecov.json
 NEXTEST_FLAGS = --no-fail-fast
+WITH_COVERAGE = 1
 else
 RUST_COVER_TYPE = --open
 endif
@@ -17,7 +18,10 @@ _version:
 _build:: _version
 
 _test:: _version
+ifeq ($(WITH_COVERAGE), 1)
+	# cleaning causes a rebuild, so we only do it locally if the user requests it
 	@$(CARGO) llvm-cov clean --workspace
+endif
 
 test: unit itest
 
