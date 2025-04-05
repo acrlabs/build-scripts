@@ -39,7 +39,7 @@ build:
 # This is dumb AF
 space := $(subst ,, )
 _cover::
-	@$(CARGO) llvm-cov report $(RUST_COVER_TYPE) \
+	@LLVM_COV_FLAGS='-coverage-watermark=60,30' $(CARGO) llvm-cov report $(RUST_COVER_TYPE) \
 		$(if $(COVERAGE_IGNORES),--ignore-filename-regex "$(subst $(space),|,$(COVERAGE_IGNORES))",)
 
 .PHONY: release
