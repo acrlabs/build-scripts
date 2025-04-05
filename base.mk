@@ -1,6 +1,6 @@
 # public variables that can be changed by projects
 BUILD_DIR ?= .build
-COVERAGE_DIR ?= $(BUILD_DIR)/coverage
+CONFIG_DIR ?= .config
 
 # _DEFAULT_BUILD_TARGETS can be modified by sub-makefiles to add additional "default" behaviour
 # when you run `make`
@@ -29,8 +29,7 @@ _lint::
 	pre-commit run --all
 
 .PHONY: _test
-_test:: | $(COVERAGE_DIR)
-	rm -rf $(COVERAGE_DIR)/*
+_test::
 
 .PHONY: _cover
 _cover::
