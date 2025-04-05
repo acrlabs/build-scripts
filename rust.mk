@@ -7,6 +7,7 @@ NEXTEST_FLAGS = --no-fail-fast
 WITH_COVERAGE = 1
 else
 RUST_COVER_TYPE = --open
+LLVM_COV_FLAGS=LLVM_COV_FLAGS='-coverage-watermark=60,30'
 endif
 
 TEST_CMD=+nightly llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS) --no-report --branch
@@ -39,7 +40,7 @@ build:
 # This is dumb AF
 space := $(subst ,, )
 _cover::
-	@LLVM_COV_FLAGS='-coverage-watermark=60,30' $(CARGO) llvm-cov report $(RUST_COVER_TYPE) \
+	@$(LLVM_COV_FLAGS) $(CARGO) llvm-cov report $(RUST_COVER_TYPE) \
 		$(if $(COVERAGE_IGNORES),--ignore-filename-regex "$(subst $(space),|,$(COVERAGE_IGNORES))",)
 
 .PHONY: release
