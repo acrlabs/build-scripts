@@ -28,7 +28,7 @@ test: unit itest
 
 .PHONY: unit
 unit:
-	@$(CARGO) $(TEST_CMD)
+	@$(CARGO) $(TEST_CMD) $(CARGO_TEST)
 
 .PHONY: itest
 itest:
