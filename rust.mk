@@ -54,7 +54,8 @@ release: NEW_APP_VERSION=$(subst v,,$(shell git cliff -c $(CONFIG_DIR)/cliff.tom
 release:
 	cargo set-version $(NEW_APP_VERSION) $(if $(EXCLUDE_CRATES),--exclude $(EXCLUDE_CRATES),)
 	git cliff -c $(CONFIG_DIR)/cliff.toml -u --tag $(NEW_APP_VERSION) --prepend CHANGELOG.md
-	git commit -a -m "release: version v$(NEW_APP_VERSION)" && \
+	(git commit -a -m "release: version v$(NEW_APP_VERSION)" || \
+	 git commit -a -m "release: version v$(NEW_APP_VERSION)") && \
 		git tag v$(NEW_APP_VERSION)
 
 .PHONY: publish
