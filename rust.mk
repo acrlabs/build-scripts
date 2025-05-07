@@ -34,11 +34,11 @@ test: unit itest
 
 .PHONY: unit
 unit:
-	@$(CARGO) $(TEST_CMD) $(CARGO_TEST)
+	@RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) $(CARGO_TEST)
 
 .PHONY: itest
 itest:
-	@$(CARGO) $(TEST_CMD) --profile itest
+	@RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) --profile itest
 
 build:
 	$(CARGO) build
