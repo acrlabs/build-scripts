@@ -3,7 +3,7 @@ COVERAGE_IGNORES=
 EXCLUDE_CRATES=
 
 ifdef IN_CI
-RUST_COVER_TYPE = --codecov --output-path codecov.json
+RUST_COVER_TYPE = --lcov --output-path codecov.lcov
 NEXTEST_FLAGS = --no-fail-fast
 WITH_COVERAGE = 1
 else
@@ -11,7 +11,11 @@ RUST_COVER_TYPE = --open
 LLVM_COV_FLAGS=LLVM_COV_FLAGS='-coverage-watermark=60,30'
 endif
 
-TEST_CMD=+nightly llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS) --no-report --branch
+ifdef WITH_COVERAGE
+TEST_CMD=+nightly llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS) --no-report --branch $(RUST_COVER_TYPE)
+else
+TEST_CMD=nextest run --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS)
+endif
 
 .PHONY: _version
 _version:
