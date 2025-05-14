@@ -1,6 +1,7 @@
 CARGO ?= cargo
 COVERAGE_IGNORES=
 EXCLUDE_CRATES=
+CARGO_PROFILE ?= test
 
 ifdef IN_CI
 RUST_COVER_TYPE = --lcov --output-path codecov.lcov
@@ -12,9 +13,9 @@ LLVM_COV_FLAGS=LLVM_COV_FLAGS='-coverage-watermark=60,30'
 endif
 
 ifdef WITH_COVERAGE
-TEST_CMD=+nightly llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS) --no-report --branch $(RUST_COVER_TYPE)
+TEST_CMD=+nightly llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml --cargo-profile $(CARGO_PROFILE) $(NEXTEST_FLAGS) --no-report --branch $(RUST_COVER_TYPE)
 else
-TEST_CMD=nextest run --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS)
+TEST_CMD=nextest run --config-file $(CONFIG_DIR)/nextest.toml --cargo-profile $(CARGO_PROFILE) $(NEXTEST_FLAGS)
 endif
 
 .PHONY: _version
@@ -31,18 +32,18 @@ _build:: _version
 _test:: _version
 ifeq ($(WITH_COVERAGE), 1)
 	# cleaning causes a rebuild, so we only do it locally if the user requests it
-	@$(CARGO) llvm-cov clean --workspace
+	@$(CARGO) llvm-cov clean --workspace --profile $(CARGO_PROFILE)
 endif
 
 test: unit itest
 
 .PHONY: unit
 unit:
-	@RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) $(CARGO_TEST)
+	RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) $(CARGO_TEST)
 
 .PHONY: itest
 itest:
-	@RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) --profile itest
+	RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) --profile itest
 
 build:
 	$(CARGO) build
@@ -50,7 +51,7 @@ build:
 # This is dumb AF
 space := $(subst ,, )
 _cover::
-	@$(LLVM_COV_FLAGS) $(CARGO) llvm-cov report $(RUST_COVER_TYPE) \
+	@$(LLVM_COV_FLAGS) $(CARGO) llvm-cov report --profile $(CARGO_PROFILE) $(RUST_COVER_TYPE) \
 		$(if $(COVERAGE_IGNORES),--ignore-filename-regex "$(subst $(space),|,$(COVERAGE_IGNORES))",)
 
 .PHONY: release
