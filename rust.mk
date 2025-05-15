@@ -63,6 +63,7 @@ release:
 	 git commit -a -m "release: version v$(NEW_APP_VERSION)") && \
 		git tag v$(NEW_APP_VERSION)
 
+# Need the --allow-dirty flag because cargo ws publish changes Cargo.toml and then complains about it
 .PHONY: publish
 publish:
-	cargo ws publish --publish-as-is
+	cargo ws publish --publish-as-is --allow-dirty
