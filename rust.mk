@@ -5,7 +5,6 @@ CARGO_PROFILE ?= test
 
 ifdef IN_CI
 RUST_COVER_TYPE = --lcov --output-path codecov.lcov
-NEXTEST_FLAGS = --no-fail-fast
 WITH_COVERAGE = 1
 else
 RUST_COVER_TYPE = --open
@@ -39,11 +38,11 @@ test: unit itest
 
 .PHONY: unit
 unit:
-	RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) $(CARGO_TEST)
+	RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) $(CARGO_TEST) --no-fail-fast
 
 .PHONY: itest
 itest:
-	RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) --profile itest
+	RUST_LOG=$(RUST_LOG) $(CARGO) $(TEST_CMD) --profile itest --no-fail-fast
 
 build:
 	$(CARGO) build
