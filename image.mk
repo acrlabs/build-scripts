@@ -8,7 +8,9 @@ _DEFAULT_BUILD_TARGETS += image
 
 .PHONY: _image
 _image::
+ifneq ($(IMAGE_DEPS),)
 	make $(IMAGE_DEPS)
+endif
 
 .PHONY: $(IMAGE_TARGETS)
 $(IMAGE_TARGETS):
