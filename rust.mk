@@ -46,6 +46,7 @@ itest:
 
 build:
 	$(CARGO) build
+	cp $(addprefix $(BUILD_DIR)/debug/,$(ARTIFACTS)) $(BUILD_DIR)/.
 
 # This is dumb AF
 space := $(subst ,, )
