@@ -1,6 +1,13 @@
 # public variables that can be changed by projects
 BUILD_DIR ?= .build
 CONFIG_DIR ?= .config
+BUILD_MODE ?= debug
+
+# Allow recursive builds (e.g., inside a docker container) by setting this to some
+# other value in the child makefile.  When you want to actually run the build command,
+# set back to local in the make command
+DISPATCH_MODE ?= local
+
 
 # _DEFAULT_BUILD_TARGETS can be modified by sub-makefiles to add additional "default" behaviour
 # when you run `make`
