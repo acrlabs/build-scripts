@@ -44,7 +44,8 @@ ifeq ($(WITH_COVERAGE), 1)
 endif
 	make unit itest
 
-# This is dumb AF
+# This is dumb AF -- you can't include a literal space character in the function definition,
+# so we define a make variable that is equal to a literal space
 space := $(subst ,, )
 _cover::
 	@$(LLVM_COV_FLAGS) cargo llvm-cov report $(RUST_COVER_TYPE) \
