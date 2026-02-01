@@ -61,7 +61,7 @@ unit:
 
 .PHONY: itest
 itest:
-	RUST_LOG=$(RUST_LOG) $(CARGO_TEST_CMD) --profile itest --no-fail-fast
+	RUST_LOG=$(RUST_LOG) $(CARGO_TEST_CMD) --profile itest --no-fail-fast --no-tests pass
 
 .PHONY: release
 release: NEW_APP_VERSION=$(subst v,,$(shell git cliff -c $(CONFIG_DIR)/cliff.toml --bumped-version))
