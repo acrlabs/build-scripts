@@ -32,7 +32,9 @@ _setup::
 _build:: _version
 ifeq ($(DISPATCH_MODE), local)
 	cargo build $(addprefix -p=,$(ARTIFACTS)) --profile=$(CARGO_PROFILE) --color=always
+ifdef ARTIFACTS
 	cp $(addprefix $(BUILD_DIR)/$(CARGO_ARTIFACT_DIR)/,$(ARTIFACTS)) $(BUILD_DIR)/.
+endif
 else
 	make $(BUILD_TARGETS)
 endif
