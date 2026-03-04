@@ -15,9 +15,9 @@ LLVM_COV_FLAGS=LLVM_COV_FLAGS='-coverage-watermark=60,30'
 endif
 
 ifdef WITH_COVERAGE
-CARGO_TEST_CMD=cargo +nightly-2026-01-01 llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS) --no-report $(RUST_COVER_TYPE)
+CARGO_TEST_CMD=cargo +nightly-2026-01-01 llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml --max-progress-running 0 $(NEXTEST_FLAGS) --no-report $(RUST_COVER_TYPE)
 else
-CARGO_TEST_CMD=cargo nextest run --config-file $(CONFIG_DIR)/nextest.toml $(NEXTEST_FLAGS)
+CARGO_TEST_CMD=cargo nextest run --config-file $(CONFIG_DIR)/nextest.toml --max-progress-running 0 $(NEXTEST_FLAGS)
 endif
 
 .PHONY: _version
