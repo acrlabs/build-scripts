@@ -15,9 +15,12 @@ LLVM_COV_FLAGS=LLVM_COV_FLAGS='-coverage-watermark=60,30'
 endif
 
 ifdef WITH_COVERAGE
-CARGO_TEST_CMD=cargo +nightly-2026-01-01 llvm-cov nextest --config-file $(CONFIG_DIR)/nextest.toml --max-progress-running 0 $(NEXTEST_FLAGS) --no-report $(RUST_COVER_TYPE)
+CARGO_TEST_CMD=RUST_LOG=$(RUST_LOG) cargo +nightly-2026-01-01 llvm-cov nextest \
+			   --config-file $(CONFIG_DIR)/nextest.toml --max-progress-running 0 \
+			   $(NEXTEST_FLAGS) --no-report $(RUST_COVER_TYPE)
 else
-CARGO_TEST_CMD=cargo nextest run --config-file $(CONFIG_DIR)/nextest.toml --max-progress-running 0 $(NEXTEST_FLAGS)
+CARGO_TEST_CMD=RUST_LOG=$(RUST_LOG) cargo nextest run --config-file $(CONFIG_DIR)/nextest.toml \
+			   --max-progress-running 0 $(NEXTEST_FLAGS)
 endif
 
 .PHONY: _version
@@ -57,11 +60,15 @@ _cover::
 # so we don't prefix with _ (that way users can easily call, e.g., `make unit` to just run unit tests).
 .PHONY: unit
 unit:
-	RUST_LOG=$(RUST_LOG) $(CARGO_TEST_CMD) $(CARGO_TEST) --no-fail-fast
+	$(CARGO_TEST_CMD) $(CARGO_TEST) --no-fail-fast
 
 .PHONY: itest
 itest:
-	RUST_LOG=$(RUST_LOG) $(CARGO_TEST_CMD) --profile itest --no-fail-fast --no-tests pass
+	$(CARGO_TEST_CMD) --profile itest --no-fail-fast --no-tests pass
+
+.PHONY: debug-test
+debug-test:
+	$(CARGO_TEST_CMD) --debugger "rust-gdb --args" -E 'all()' --ignore-default-filter $(CARGO_TEST)
 
 .PHONY: release
 release: NEW_APP_VERSION=$(subst v,,$(shell git cliff -c $(CONFIG_DIR)/cliff.toml --bumped-version))
