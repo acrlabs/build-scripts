@@ -2,11 +2,15 @@ K8S_INPUT_DIR ?= k8s
 K8S_MANIFESTS_DIR ?= $(BUILD_DIR)/manifests
 KUSTOMIZE_DIR ?= kustomize
 
-APP_VERSION=$(shell tomlq -r .workspace.package.version Cargo.toml)
+APP_VERSION := $(shell awk -F'"' '/^version = / {print $$2; exit}' Cargo.toml)
 _DEFAULT_BUILD_TARGETS += run
 
 $(K8S_MANIFESTS_DIR):
 	mkdir -p $@
+
+ifndef APP_VERSION
+$(error APP_VERSION could not be determined from Cargo.toml)
+endif
 
 .PHONY: _k8s
 _k8s:: | $(K8S_MANIFESTS_DIR)
