@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
-SUFFIX=""
-SHA=$(git rev-parse --short HEAD)
-TAGS=$(git tag --points-at ${SHA})
+is_clean() {
+    [[ -z "$(git status --porcelain --untracked-files=no)" ]]
+}
 
-if [ "$(git status --porcelain --untracked-files=no)" ]; then
-    SUFFIX="-$(uuidgen)"
+release_tag() {
+    git tag --points-at HEAD \
+        | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+        | sort -V \
+        | tail -n 1
+}
+
+tag=""
+if is_clean; then
+    tag=$(release_tag) || true
 fi
 
-for TAG in $TAGS; do
-  if [[ $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    printf "${TAG}${SUFFIX}"
-    exit 0
-  fi
-done
-
-printf "${SHA}${SUFFIX}"
+if [[ -n "$tag" ]]; then
+    printf "%s" "${tag}"
+else
+    git ls-files -s -- ${DOCKER_IMAGE_TAG_PATHSPECS[@]} | sha256sum | cut -c1-10
+fi
