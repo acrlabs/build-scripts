@@ -26,11 +26,11 @@ IMAGE_PULL_TARGETS=$(addprefix $(UPSTREAM_DOCKER_REGISTRY)/,$(ARTIFACTS))
 _DEFAULT_BUILD_TARGETS += image
 
 .PHONY: _image
-_image::
+_image:: | $(BUILD_DIR)
 	$(if $(IMAGE_DEPS),make $(IMAGE_DEPS),,)
 
 .PHONY: _push_image
-_push_image:
+_push_image: | $(BUILD_DIR)
 	docker push $(IMAGE_NAME)
 	printf "$(IMAGE_NAME)" > $(BUILD_DIR)/$(PROJECT_NAME)-image
 
